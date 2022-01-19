@@ -1,8 +1,6 @@
 import json
-from pprint import pprint
 import requests
 from progress.bar import IncrementalBar
-import time
 
 
 VKONTAKTE_TOKEN = ''
@@ -22,16 +20,11 @@ class VkontakteAPI:
         images = []
 
         for item in json['response']['items']:
-            # pprint(item)
-            # for size in item['sizes']:
-            #     print(size)
             max_size_image = max(item['sizes'], key=lambda s: s['height']*s['width'])
             max_size_image['date'] = item['date']
             max_size_image['likes'] = item['likes']['count']
 
             images.append(max_size_image)
-
-        # pprint(images)
 
         return images
 
@@ -54,15 +47,12 @@ class YaUploader:
 
         return response.json()
 
-    def upload(self, file_path: str, disk_file_path: str):
-        href = self._get_upload_link(disk_file_path=disk_file_path).get("href", "")
+    def upload(self, file_path: str, yadisk_file_path: str):
+        href = self._get_upload_link(disk_file_path=yadisk_file_path).get("href", "")
 
         with open(file_path, 'rb') as file:
             response = requests.put(href, data=file)
         response.raise_for_status()
-        if response.status_code == 201:
-            # print("Success")
-            pass
 
 
 if __name__ == "__main__":
@@ -88,7 +78,7 @@ if __name__ == "__main__":
             file.write(response.content)
             bar.next()
 
-        yadisk_api.upload(file_name, 'vkontakte_backup/' + file_name)
+        yadisk_api.upload(file_name, file_name)
         bar.next()
 
     bar.finish()
